@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>HP 会计 — ZOLANO & 尼卡托</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+:root {
+  --bg: #0f172a; --card: #1e293b; --border: #334155;
+  --text: #f1f5f9; --muted: #94a3b8; --accent: #3b82f6;
+  --green: #22c55e; --red: #ef4444; --amber: #f59e0b;
+  --zolano: #8b5cf6; --nikator: #06b6d4;
+}
+html, body { height:100%; font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; background:var(--bg); color:var(--text); }
+body { display:flex; flex-direction:column; }
+
+/* Header */
+.header {
+  padding:12px 16px; background:var(--card); border-bottom:1px solid var(--border);
+  display:flex; align-items:center; justify-content:space-between; flex-shrink:0;
+}
+.header h1 { font-size:16px; font-weight:600; }
+.header .badge { font-size:10px; padding:2px 8px; border-radius:10px; background:var(--accent); }
+
+/* Main Content */
+.main { flex:1; overflow-y:auto; padding:12px 16px; padding-bottom:80px; }
+
+/* Bottom Nav */
+.nav {
+  position:fixed; bottom:0; left:0; right:0; display:flex;
+  background:var(--card); border-top:1px solid var(--border); z-index:100;
+}
+.nav-btn {
+  flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding:8px 0; background:none; border:none; color:var(--muted); font-size:10px; cursor:pointer;
+  transition:color .2s;
+}
+.nav-btn.active { color:var(--accent); }
+.nav-btn svg { width:22px; height:22px; margin-bottom:2px; }
+
+/* Page containers */
+.page { display:none; }
+.page.active { display:block; }
+
+/* Cards */
+.card {
+  background:var(--card); border:1px solid var(--border); border-radius:12px;
+  padding:14px; margin-bottom:12px;
+}
+.card-title { font-size:13px; color:var(--muted); margin-bottom:8px; }
+.card-value { font-size:24px; font-weight:700; }
+.card-sub { font-size:11px; color:var(--muted); margin-top:4px; }
+
+/* Brand tabs */
+.brand-tabs { display:flex; gap:8px; margin-bottom:12px; }
+.brand-tab {
+  flex:1; padding:10px; border-radius:10px; border:1px solid var(--border);
+  background:var(--card); color:var(--muted); font-size:14px; font-weight:600;
+  cursor:pointer; text-align:center; transition:all .2s;
+}
+.brand-tab.active-zolano { background:var(--zolano); color:#fff; border-color:var(--zolano); }
+.brand-tab.active-nikator { background:var(--nikator); color:#fff; border-color:var(--nikator); }
+
+/* Monthly overview */
+.month-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:6px; margin-top:10px; }
+.month-cell {
+  background:rgba(255,255,255,.05); border-radius:8px; padding:8px 4px; text-align:center;
+}
+.month-cell .m-label { font-size:10px; color:var(--muted); }
+.month-cell .m-val { font-size:13px; font-weight:600; margin-top:2px; }
+.month-cell.profit { color:var(--green); }
+.month-cell.loss { color:var(--red); }
+
+/* Comparison bar */
+.comp-bar { display:flex; align-items:center; gap:8px; margin:6px 0; }
+.comp-bar .bar-bg { flex:1; height:8px; background:rgba(255,255,255,.08); border-radius:4px; overflow:hidden; }
+.comp-bar .bar-fill { height:100%; border-radius:4px; }
+.comp-bar .bar-label { font-size:11px; color:var(--muted); min-width:60px; }
+.comp-bar .bar-val { font-size:11px; font-weight:600; min-width:60px; text-align:right; }
+
+/* Scanner page */
+.scanner-area {
+  width:100%; aspect-ratio:1; background:#000; border-radius:16px;
+  display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden;
+  margin-bottom:16px;
+}
+.scanner-area video { width:100%; height:100%; object-fit:cover; }
+.scanner-area .overlay {
+  position:absolute; inset:0; border:2px solid rgba(255,255,255,.3); border-radius:16px;
+  pointer-events:none;
+}
+.scanner-area .scan-line {
+  position:absolute; left:10%; right:10%; height:2px; background:var(--accent);
+  box-shadow:0 0 12px var(--accent); animation:scan 2s ease-in-out infinite;
+}
+@keyframes scan { 0%,100%{top:20%} 50%{top:80%} }
+
+.camera-placeholder { color:var(--muted); font-size:14px; text-align:center; }
+
+.capture-btn {
+  width:64px; height:64px; border-radius:50%; border:3px solid #fff;
+  background:transparent; cursor:pointer; margin:16px auto; display:block;
+  position:relative;
+}
+.capture-btn::after {
+  content:''; position:absolute; inset:4px; border-radius:50%; background:#fff;
+}
+.capture-btn:active::after { background:var(--accent); }
+
+/* Order form */
+.form-group { margin-bottom:12px; }
+.form-group label { display:block; font-size:12px; color:var(--muted); margin-bottom:4px; }
+.form-group input, .form-group select, .form-group textarea {
+  width:100%; padding:10px 12px; background:rgba(255,255,255,.06); border:1px solid var(--border);
+  border-radius:8px; color:var(--text); font-size:14px; outline:none;
+}
+.form-group input:focus, .form-group select:focus { border-color:var(--accent); }
+.form-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+
+.submit-btn {
+  width:100%; padding:14px; border:none; border-radius:10px; font-size:15px;
+  font-weight:600; cursor:pointer; color:#fff;
+  background:linear-gradient(135deg, var(--accent), #6366f1);
+}
+.submit-btn:active { opacity:.85; }
+.submit-btn:disabled { opacity:.4; cursor:default; }
+
+/* Upload status */
+.upload-status {
+  padding:12px; border-radius:10px; margin-top:12px; font-size:13px;
+  display:none; align-items:center; gap:8px;
+}
+.upload-status.success { display:flex; background:rgba(34,197,94,.15); color:var(--green); }
+.upload-status.error { display:flex; background:rgba(239,68,68,.15); color:var(--red); }
+.upload-status.loading { display:flex; background:rgba(59,130,246,.15); color:var(--accent); }
+.spinner { width:16px; height:16px; border:2px solid transparent; border-top-color:currentColor; border-radius:50%; animation:spin .8s linear infinite; }
+@keyframes spin { to { transform:rotate(360deg); } }
+
+/* Reports */
+.report-summary { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.report-item { background:rgba(255,255,255,.04); border-radius:10px; padding:12px; }
+.report-item .r-label { font-size:11px; color:var(--muted); }
+.report-item .r-value { font-size:18px; font-weight:700; margin-top:4px; }
+
+/* History */
+.history-item {
+  display:flex; align-items:center; gap:10px; padding:10px 0;
+  border-bottom:1px solid var(--border);
+}
+.history-item:last-child { border-bottom:none; }
+.history-icon {
+  width:36px; height:36px; border-radius:8px; display:flex; align-items:center;
+  justify-content:center; font-size:16px; flex-shrink:0;
+}
+.history-icon.zolano { background:rgba(139,92,246,.2); }
+.history-icon.nikator { background:rgba(6,182,212,.2); }
+.history-info { flex:1; min-width:0; }
+.history-info .h-brand { font-size:12px; font-weight:600; }
+.history-info .h-detail { font-size:11px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.history-amount { font-size:14px; font-weight:600; text-align:right; }
+.history-amount.positive { color:var(--green); }
+.history-amount.negative { color:var(--red); }
+
+/* Settings */
+.setting-row {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:12px 0; border-bottom:1px solid var(--border);
+}
+.setting-row:last-child { border-bottom:none; }
+.setting-label { font-size:14px; }
+.setting-desc { font-size:11px; color:var(--muted); margin-top:2px; }
+.toggle {
+  width:44px; height:24px; border-radius:12px; background:var(--border);
+  position:relative; cursor:pointer; transition:background .2s;
+}
+.toggle.on { background:var(--accent); }
+.toggle::after {
+  content:''; position:absolute; width:20px; height:20px; border-radius:50%;
+  background:#fff; top:2px; left:2px; transition:left .2s;
+}
+.toggle.on::after { left:22px; }
+
+/* Toast */
+.toast {
+  position:fixed; top:60px; left:50%; transform:translateX(-50%);
+  background:var(--card); border:1px solid var(--border); border-radius:10px;
+  padding:10px 20px; font-size:13px; z-index:200; opacity:0;
+  transition:opacity .3s, transform .3s; pointer-events:none;
+}
+.toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+/* Scrollbar */
+::-webkit-scrollbar { width:4px; }
+::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+
+/* Empty state */
+.empty-state { text-align:center; padding:40px 20px; color:var(--muted); }
+.empty-state .empty-icon { font-size:48px; margin-bottom:12px; }
+.empty-state .empty-text { font-size:14px; }
+
+/* Year selector */
+.year-selector { display:flex; align-items:center; gap:12px; margin-bottom:12px; }
+.year-btn {
+  padding:6px 14px; border-radius:8px; border:1px solid var(--border);
+  background:var(--card); color:var(--text); font-size:13px; cursor:pointer;
+}
+.year-btn.active { background:var(--accent); border-color:var(--accent); }
+
+/* Quick stats row */
+.quick-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:12px; }
+.quick-stat { background:rgba(255,255,255,.04); border-radius:10px; padding:10px; text-align:center; }
+.quick-stat .qs-val { font-size:16px; font-weight:700; }
+.quick-stat .qs-label { font-size:10px; color:var(--muted); margin-top:2px; }
+
+/* Image preview */
+.preview-img {
+  width:100%; max-height:200px; object-fit:cover; border-radius:10px;
+  margin-bottom:12px; display:none;
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <h1>📊 HP 会计</h1>
+  <span class="badge" id="syncBadge">● 已连接</span>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- ===== PAGE 1: Dashboard ===== -->
+<div class="main">
+  <div class="page active" id="pageDashboard">
+    <!-- Year selector -->
+    <div class="year-selector">
+      <button class="year-btn active" data-year="2026">2026</button>
+      <button class="year-btn" data-year="2025">2025</button>
+    </div>
+
+    <!-- Brand tabs -->
+    <div class="brand-tabs">
+      <button class="brand-tab active-zolano" data-brand="zolano">ZOLANO</button>
+      <button class="brand-tab" data-brand="nikator">尼卡托</button>
+    </div>
+
+    <!-- Quick stats -->
+    <div class="quick-stats">
+      <div class="quick-stat">
+        <div class="qs-val" id="statSales">¥0</div>
+        <div class="qs-label">总业绩</div>
+      </div>
+      <div class="quick-stat">
+        <div class="qs-val" id="statProfit">¥0</div>
+        <div class="qs-label">总盈利</div>
+      </div>
+      <div class="quick-stat">
+        <div class="qs-val" id="statMargin">0%</div>
+        <div class="qs-label">毛利率</div>
+      </div>
+    </div>
+
+    <!-- Monthly overview -->
+    <div class="card">
+      <div class="card-title">月度业绩趋势</div>
+      <div class="month-grid" id="monthGrid"></div>
+    </div>
+
+    <!-- Cost breakdown -->
+    <div class="card">
+      <div class="card-title">成本构成</div>
+      <div id="costBreakdown"></div>
+    </div>
+
+    <!-- Comparison (both brands) -->
+    <div class="card" id="comparisonCard">
+      <div class="card-title">品牌对比</div>
+      <div id="comparisonBars"></div>
+    </div>
+
+    <!-- Recent transactions -->
+    <div class="card">
+      <div class="card-title">最近记录</div>
+      <div id="recentHistory"></div>
+    </div>
+  </div>
+
+  <!-- ===== PAGE 2: Scanner ===== -->
+  <div class="page" id="pageScanner">
+    <div class="scanner-area" id="scannerArea">
+      <div class="camera-placeholder" id="cameraPlaceholder">
+        <div style="font-size:48px;margin-bottom:12px;">📷</div>
+        <div>点击下方按钮开启相机</div>
+      </div>
+      <video id="cameraVideo" autoplay playsinline style="display:none;"></video>
+      <canvas id="captureCanvas" style="display:none;"></canvas>
+      <div class="overlay"><div class="scan-line"></div></div>
+    </div>
+    <img class="preview-img" id="previewImg">
+    <button class="capture-btn" id="captureBtn" onclick="handleCapture()"></button>
+
+    <div class="card" id="manualForm" style="display:none;">
+      <div class="card-title">手动补录信息</div>
+      <div class="form-group">
+        <label>品牌</label>
+        <select id="formBrand">
+          <option value="zolano">ZOLANO</option>
+          <option value="nikator">尼卡托</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>客户名</label>
+          <input type="text" id="formCustomer" placeholder="张先生">
+        </div>
+        <div class="form-group">
+          <label>订单号</label>
+          <input type="text" id="formOrder" placeholder="如 1005995">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>销售业绩 (¥)</label>
+          <input type="number" id="formSales" placeholder="0">
+        </div>
+        <div class="form-group">
+          <label>出厂成本 (¥)</label>
+          <input type="number" id="formCost" placeholder="0">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>日期</label>
+          <input type="date" id="formDate">
+        </div>
+        <div class="form-group">
+          <label>产品类型</label>
+          <select id="formProduct">
+            <option value="sofa">沙发</option>
+            <option value="bed">床架</option>
+            <option value="mattress">床垫</option>
+            <option value="chair">椅子</option>
+            <option value="table">桌子</option>
+            <option value="other">其他</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>备注</label>
+        <textarea id="formNotes" rows="2" placeholder="产品型号、颜色等"></textarea>
+      </div>
+      <button class="submit-btn" onclick="submitOrder()">📤 发送到会计系统</button>
+      <div class="upload-status" id="uploadStatus">
+        <div class="spinner"></div>
+        <span>正在发送...</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PAGE 3: Reports ===== -->
+  <div class="page" id="pageReports">
+    <div class="year-selector">
+      <button class="year-btn active" data-year="2026">2026</button>
+      <button class="year-btn" data-year="2025">2025</button>
+    </div>
+
+    <div class="report-summary">
+      <div class="report-item">
+        <div class="r-label">本月总业绩</div>
+        <div class="r-value" id="rptMonthSales">¥0</div>
+      </div>
+      <div class="report-item">
+        <div class="r-label">本月总盈利</div>
+        <div class="r-value" id="rptMonthProfit">¥0</div>
+      </div>
+      <div class="report-item">
+        <div class="r-label">累计业绩 (YTD)</div>
+        <div class="r-value" id="rptYtdSales">¥0</div>
+      </div>
+      <div class="report-item">
+        <div class="r-label">累计盈利 (YTD)</div>
+        <div class="r-value" id="rptYtdProfit">¥0</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:12px;">
+      <div class="card-title">月度明细</div>
+      <div id="monthlyDetail"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">品牌对比</div>
+      <div id="reportComparison"></div>
+    </div>
+
+    <button class="submit-btn" style="margin-top:12px;" onclick="generateReport()">📄 生成报告</button>
+  </div>
+
+  <!-- ===== PAGE 4: Settings ===== -->
+  <div class="page" id="pageSettings">
+    <div class="card">
+      <div class="card-title">上传设置</div>
+      <div class="form-group">
+        <label>Webhook URL</label>
+        <input type="url" id="webhookUrl" placeholder="https://your-server.com/api/upload" value="">
+      </div>
+      <div class="setting-row">
+        <div>
+          <div class="setting-label">自动上传</div>
+          <div class="setting-desc">拍照后自动发送到服务器</div>
+        </div>
+        <div class="toggle on" id="toggleAutoUpload" onclick="toggleSetting(this)"></div>
+      </div>
+      <div class="setting-row">
+        <div>
+          <div class="setting-label">离线存储</div>
+          <div class="setting-desc">无网络时保存到本地</div>
+        </div>
+        <div class="toggle on" id="toggleOffline" onclick="toggleSetting(this)"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">数据管理</div>
+      <div class="setting-row" onclick="exportData()" style="cursor:pointer;">
+        <div>
+          <div class="setting-label">导出数据</div>
+          <div class="setting-desc">下载所有记录为JSON</div>
+        </div>
+        <span>→</span>
+      </div>
+      <div class="setting-row" onclick="importData()" style="cursor:pointer;">
+        <div>
+          <div class="setting-label">导入数据</div>
+          <div class="setting-desc">从JSON文件恢复</div>
+        </div>
+        <span>→</span>
+      </div>
+      <div class="setting-row" onclick="clearData()" style="cursor:pointer;">
+        <div>
+          <div class="setting-label">清除所有数据</div>
+          <div class="setting-desc">不可恢复的操作</div>
+        </div>
+        <span style="color:var(--red);">⚠</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">关于</div>
+      <div class="setting-row">
+        <div class="setting-label">版本</div>
+        <span style="color:var(--muted);">v1.0.0</span>
+      </div>
+      <div class="setting-row">
+        <div class="setting-label">存储使用</div>
+        <span style="color:var(--muted);" id="storageUsed">0 KB</span>
+      </div>
+    </div>
+
+    <input type="file" id="importInput" accept=".json" style="display:none;" onchange="handleImport(event)">
+  </div>
+</div>
+
+<!-- Bottom Navigation -->
+<nav class="nav">
+  <button class="nav-btn active" data-page="pageDashboard" onclick="switchPage(this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+    首页
+  </button>
+  <button class="nav-btn" data-page="pageScanner" onclick="switchPage(this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+    扫描
+  </button>
+  <button class="nav-btn" data-page="pageReports" onclick="switchPage(this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+    报表
+  </button>
+  <button class="nav-btn" data-page="pageSettings" onclick="switchPage(this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+    设置
+  </button>
+</nav>
+
+<script src="app.js"></script>
+</body>
+</html>
