@@ -28,6 +28,37 @@ const BRAND_DATA = {
     label: "希瑞 Stareep",
     color: "#f59e0b",
     monthly: {
+      3: {
+        sales: 157268,
+        cost: 92512,
+        grossProfit: 64756,
+        orders: [
+          { id: "1005983", customer: "张S/孙R", date: "2026.3.28", deposit: 28000, balance: 28768, items: [{ name: "床架", model: "ML60", spec: "180×200", color: "烟汲灰", retail: 22980, cost: 17235 }, { name: "床垫", model: "F110", spec: "180×200", color: "无", retail: 9800, cost: 7350 }, { name: "智能床垫", model: "MF10", spec: "180×200", color: "无", retail: 8780, cost: 6585 }, { name: "智能床垫", model: "MF10", spec: "180×200", color: "无", retail: 6580, cost: 3619 }, { name: "床屏", model: "CN-FI10Z", spec: "80×200", color: "无", retail: 10800, cost: 5940 }, { name: "床架", model: "BK10", spec: "180×200", color: "星漠卡其", retail: 6080, cost: 3240 }, { name: "床垫", model: "MF10", spec: "180×200", color: "乐高底座", retail: 6580, cost: 3619 }, { name: "床屏", model: "CN-FI10Z", spec: "180×200", color: "智能底座", retail: 10800, cost: 5940 }, { name: "床架", model: "BK10", spec: "180×200", color: "BF30", retail: 5980, cost: 3240 }],
+          },
+          { id: "1005991", customer: "付豪", date: "2026.3.21", deposit: 28000, balance: 28768, items: [{ name: "床垫", model: "MF10", spec: "180×200", color: "乐高底座", retail: 6580, cost: 3975 }, { name: "智能床垫", model: "F110", spec: "180×200", color: "无", retail: 10800, cost: 6525 }, { name: "枕头", model: "PC50", spec: "S", color: "2", retail: 1280, cost: 0 }] },
+          { id: "1005981", customer: "龚玲", date: "2026.3.15", deposit: 5000, balance: 5500, items: [{ name: "床垫", model: "MF10", spec: "2.0×2.2", color: "1.8×2.0×23", retail: 24800, cost: 11318 }, { name: "床垫", model: "MF10", spec: "F110Z", color: "乐高底座", retail: 6580, cost: 3003 }, { name: "床垫", model: "乐高", spec: "1.8×2.0", color: "1.8×2.0×23", retail: 12600, cost: 5750 }, { name: "床屏", model: "CN-FI13", spec: "1.8×2.0", color: "无", retail: 10800, cost: 4929 }, { name: "智能床垫", model: "CN-MI20", spec: "1.8×2.0", color: "无", retail: 8800, cost: 3433 }, { name: "智能床垫", model: "CN-BL20", spec: "1.8×2.0", color: "无", retail: 56800, cost: 22157 }, { name: "床头柜", model: "CN-NL10", spec: "1.8×2.0", color: "无", retail: 37800, cost: 14745 }, { name: "智能床垫", model: "CN-PI20", spec: "2", color: "智能底座", retail: 5980, cost: 2333 }, { name: "智能床垫", model: "CN-PI20", spec: "2", color: "智能底座", retail: 5980, cost: 2333 }] },
+          { id: "1005976", customer: "姜总", date: "2026.3.04", deposit: 10000, balance: 15000, items: [{ name: "枕头", model: "PC50", spec: "2", color: "智能底座", retail: 0, cost: 428 }, { name: "枕头", model: "PC50", spec: "2", color: "智能底座", retail: 0, cost: 400 }] },
+          { id: "1005980", customer: "黎秀娜", date: "2026.3.06", deposit: 0, balance: 45000, items: [{ name: "智能床垫", model: "S3 Air", spec: "180×200", color: "智能底座", retail: 21800, cost: 11214 }, { name: "枕头", model: "乐高", spec: "180×200", color: "智能底座", retail: 10800, cost: 5556 }] },
+          { id: "1005983-2", customer: "袁小姐", date: "2026.3.??", deposit: 20000, balance: 0, items: [{ name: "床架", model: "床架", spec: "180×200", color: "智能底座", retail: 6280, cost: 3230 }] }
+        ],
+        summary: { totalOrders: 6, totalSales: 157268, totalCost: 92512, totalProfit: 64756, totalDeposit: 91000, totalBalance: 78036, margin: "41.2%" },
+        expenses: { rent: 0, wages: 0, electricity: 0, delivery: 0, subsidy: 0 }
+      },
+      4: {
+        sales: 33983,
+        cost: 18015,
+        grossProfit: 15296,
+        orders: [
+          { id: "1005981", customer: "刘小姐", date: "2026.4.16", deposit: 13800, balance: 0, items: [{ name: "床垫", model: "CN-MF01C", spec: "CN-BC21", color: "无", retail: 4699, cost: 2862 }, { name: "床架", model: "CN-BF30", spec: "BF30", color: "无", retail: 7580, cost: 4617 }] },
+          { id: "1005978", customer: "刘小姐", date: "2026.4.16", deposit: 13800, balance: 0, items: [{ name: "床架", model: "床架", spec: "1.5×2.0", color: "BF30", retail: 5980, cost: 3642 }, { name: "床垫", model: "MF10", spec: "CN-BC21", color: "BF30", retail: 4399, cost: 2679 }] },
+          { id: "1005987", customer: "傅姐", date: "2026.4.25", deposit: 15000, balance: 0, items: [{ name: "床垫", model: "MF10", spec: "180×200", color: "乐高底座", retail: 6580, cost: 6580 }, { name: "枕头", model: "乐高", spec: "180×200", color: "智能床垫", retail: 10800, cost: 6580 }, { name: "床托", model: "MF10", spec: "2", color: "180×200", retail: 1000, cost: 1000 }, { name: "带储物", model: "黑色皮", spec: "2", color: "180×200", retail: 1000, cost: 1000 }] },
+          { id: "1005995", customer: "朱S", date: "2026.4.14", deposit: 1100, balance: 0, items: [{ name: "扫地机器人", model: "黑色11", spec: "1", color: "1", retail: 1699, cost: 1100 }] },
+          { id: "1005995-2", customer: "张玉", date: "2026.4.14", deposit: 1800, balance: 0, items: [{ name: "智能戒指", model: "1", spec: "1", color: "1", retail: 3999, cost: 1800 }] },
+          { id: "1005995-3", customer: "外国人", date: "2026.4.14", deposit: 1100, balance: 0, items: [{ name: "智能戒指", model: "1", spec: "1", color: "1", retail: 3999, cost: 1100 }] }
+        ],
+        summary: { totalOrders: 6, totalSales: 33983, totalCost: 18015, totalProfit: 15296, totalDeposit: 58600, totalBalance: 0, margin: "45.0%" },
+        expenses: { rent: 0, wages: 0, electricity: 0, delivery: 0, subsidy: 0 }
+      },
       5: {
         sales: 88398,
         cost: 59910,
@@ -60,6 +91,8 @@ function loadState() {
     if (saved) state.records = JSON.parse(saved);
     const savedBrand = localStorage.getItem("hp_accounting_brand");
     if (savedBrand) state.currentBrand = savedBrand;
+    const savedStareepMonth = localStorage.getItem("hp_stareep_month");
+    if (savedStareepMonth) state.stareepMonth = savedStareepMonth;
     const savedYear = localStorage.getItem("hp_accounting_year");
     if (savedYear) state.currentYear = parseInt(savedYear);
     const webhook = localStorage.getItem("hp_accounting_webhook");
@@ -195,8 +228,18 @@ function renderDashboard() {
 }
 
 function renderStareepOrders(brand) {
-  const month = Object.keys(brand.monthly)[0];
-  const data = brand.monthly[month];
+  // Month selector for Stareep
+  const months = ["3月", "4月", "5月"];
+  if (!state.stareepMonth) state.stareepMonth = "5月";
+  const monthKey = state.stareepMonth;
+  const data = brand.monthly[state.stareepMonth];
+  if (!data) {
+    // Fallback to first available month
+    const firstMonth = months.find(m => brand.monthly[m]);
+    state.stareepMonth = firstMonth || "5月";
+    renderStareepOrders(brand);
+    return;
+  }
   const summary = data.summary;
 
   // Quick stats for Stareep
@@ -217,6 +260,33 @@ function renderStareepOrders(brand) {
   container.parentElement.querySelector(".card-title").textContent = "订单详情";
   container.className = "stareep-orders";
   container.innerHTML = "";
+
+  // Month selector
+  const selDiv = document.createElement("div");
+  selDiv.style.cssText = "display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;";
+  months.forEach(m => {
+    const btn = document.createElement("button");
+    btn.textContent = m;
+    btn.style.cssText = `padding:6px 14px;border-radius:8px;border:1px solid var(--border);background:${state.stareepMonth === m ? "var(--amber)" : "var(--card)"};color:${state.stareepMonth === m ? "#fff" : "var(--text)"};cursor:pointer;font-size:13px;font-weight:600;transition:all .2s;`;
+    btn.onclick = () => { state.stareepMonth = m; localStorage.setItem("hp_stareep_month", m); renderDashboard(); };
+    selDiv.appendChild(btn);
+  });
+  container.appendChild(selDiv);
+
+  // 3-month summary row
+  const allSummary = document.createElement("div");
+  allSummary.style.cssText = "background:rgba(245,158,11,.08);border:1px solid var(--amber);border-radius:10px;padding:10px;margin-bottom:10px;display:flex;justify-content:space-around;text-align:center;";
+  const total3mSales = months.reduce((s, m) => s + (brand.monthly[m]?.summary?.totalSales || 0), 0);
+  const total3mProfit = months.reduce((s, m) => s + (brand.monthly[m]?.summary?.totalProfit || 0), 0);
+  const total3mDeposit = months.reduce((s, m) => s + (brand.monthly[m]?.summary?.totalDeposit || 0), 0);
+  const total3mBalance = months.reduce((s, m) => s + (brand.monthly[m]?.summary?.totalBalance || 0), 0);
+  allSummary.innerHTML = `
+    <div><div style="font-size:10px;color:var(--muted)">3个月总业绩</div><div style="font-size:14px;font-weight:700;color:var(--amber)">¥${(total3mSales/10000).toFixed(1)}万</div></div>
+    <div><div style="font-size:10px;color:var(--muted)">总毛利</div><div style="font-size:14px;font-weight:700;color:var(--green)">¥${(total3mProfit/10000).toFixed(1)}万</div></div>
+    <div><div style="font-size:10px;color:var(--muted)">已收定金</div><div style="font-size:14px;font-weight:700;color:var(--accent)">¥${(total3mDeposit/10000).toFixed(1)}万</div></div>
+    <div><div style="font-size:10px;color:var(--muted)">尾款</div><div style="font-size:14px;font-weight:700;color:var(--red)">¥${(total3mBalance/10000).toFixed(1)}万</div></div>
+  `;
+  container.appendChild(allSummary);
 
   data.orders.forEach(order => {
     const card = document.createElement("div");
@@ -263,7 +333,7 @@ function renderComparison() {
   const container = document.getElementById("comparisonBars");
   container.innerHTML = "";
 
-  const brands = ["zolano", "nikator"];
+  const brands = ["zolano", "nikator", "stareep"];
   const year = state.currentYear;
 
   let totalSales = 0, totalProfit = 0;
@@ -311,7 +381,7 @@ function renderHistory() {
     div.className = "history-item";
     const profit = r.sales - r.cost;
     div.innerHTML = `
-      <div class="history-icon ${r.brand}">${r.brand === "zolano" ? "🛋" : "💺"}</div>
+      <div class="history-icon ${r.brand}">${r.brand === "zolano" ? "🛋" : r.brand === "nikator" ? "💺" : "⭐"}</div>
       <div class="history-info">
         <div class="h-brand">${BRAND_DATA[r.brand]?.label || r.brand}</div>
         <div class="h-detail">${r.customer || "未知客户"} · ${r.date || ""}</div>
@@ -325,7 +395,7 @@ function renderHistory() {
 // ===== Reports =====
 function renderReports() {
   const year = state.currentYear;
-  const brands = ["zolano", "nikator"];
+  const brands = ["zolano", "nikator", "stareep"];
   let totalMonthSales = 0, totalMonthProfit = 0, totalYtdSales = 0, totalYtdProfit = 0;
 
   // Current month data (assume month 5 = May for demo)
