@@ -796,6 +796,34 @@ function repairApp() {
   showToast("✅ 修复完成 — 请重新选择品牌");
 }
 
+// ===== File Upload Handler (gallery/files) =====
+function handleFileUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = async function(e) {
+    const base64 = e.target.result;
+    const preview = document.getElementById("previewImg");
+    const form = document.getElementById("manualForm");
+
+    // Show preview
+    preview.src = base64;
+    preview.style.display = "block";
+
+    // Show manual form
+    form.style.display = "block";
+    document.getElementById("formDate").value = new Date().toISOString().split("T")[0];
+
+    // Send to accounting system
+    await sendToAccountingSystem(base64);
+  };
+  reader.readAsDataURL(file);
+
+  // Reset input so same file can be selected again
+  event.target.value = "";
+}
+
 // Register service worker
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("./sw.js").catch(() => {});

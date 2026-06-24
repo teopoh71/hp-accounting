@@ -313,7 +313,9 @@ body { display:flex; flex-direction:column; }
       <div class="overlay"><div class="scan-line"></div></div>
     </div>
     <img class="preview-img" id="previewImg">
-    <button class="capture-btn" id="captureBtn" onclick="handleCapture()"></button>
+    <button class="capture-btn" id="captureBtn" onclick="handleCapture()">📷 拍照</button>
+    <input type="file" accept="image/*" capture="environment" id="cameraInput" style="display:none;" onchange="handleFileUpload(event)">
+    <button class="capture-btn" style="background:var(--amber);" onclick="document.getElementById('cameraInput').click()">📁 上传照片</button>
 
     <div class="card" id="manualForm" style="display:none;">
       <div class="card-title">手动补录信息</div>
