@@ -315,7 +315,7 @@ body { display:flex; flex-direction:column; }
     <img class="preview-img" id="previewImg">
     <button class="capture-btn" id="captureBtn" onclick="handleCapture()">📷 拍照</button>
     <input type="file" accept="image/*" capture="environment" id="cameraInput" style="display:none;" onchange="handleFileUpload(event)">
-    <button class="capture-btn" style="background:var(--amber);" onclick="document.getElementById('cameraInput').click()">📁 上传照片</button>
+    <button style="display:inline-block;padding:10px 16px;border-radius:10px;border:1px solid var(--border);background:var(--amber);color:#000;font-size:14px;font-weight:600;cursor:pointer;margin:8px auto;" onclick="document.getElementById('cameraInput').click()">📁 上传照片</button>
 
     <div class="card" id="manualForm" style="display:none;">
       <div class="card-title">手动补录信息</div>
