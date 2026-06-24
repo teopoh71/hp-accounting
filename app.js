@@ -231,11 +231,11 @@ function renderStareepOrders(brand) {
   // Month selector for Stareep
   const months = ["3月", "4月", "5月"];
   if (!state.stareepMonth) state.stareepMonth = "5月";
-  const monthKey = state.stareepMonth;
-  const data = brand.monthly[state.stareepMonth];
+  const monthNum = parseInt(state.stareepMonth.replace("月", ""));
+  const data = brand.monthly[monthNum];
   if (!data) {
     // Fallback to first available month
-    const firstMonth = months.find(m => brand.monthly[m]);
+    const firstMonth = months.find(m => brand.monthly[parseInt(m.replace("月", ""))]);
     state.stareepMonth = firstMonth || "5月";
     renderStareepOrders(brand);
     return;
@@ -276,10 +276,10 @@ function renderStareepOrders(brand) {
   // 3-month summary row
   const allSummary = document.createElement("div");
   allSummary.style.cssText = "background:rgba(245,158,11,.08);border:1px solid var(--amber);border-radius:10px;padding:10px;margin-bottom:10px;display:flex;justify-content:space-around;text-align:center;";
-  const total3mSales = months.reduce((s, m) => s + (brand.monthly[m]?.summary?.totalSales || 0), 0);
-  const total3mProfit = months.reduce((s, m) => s + (brand.monthly[m]?.summary?.totalProfit || 0), 0);
-  const total3mDeposit = months.reduce((s, m) => s + (brand.monthly[m]?.summary?.totalDeposit || 0), 0);
-  const total3mBalance = months.reduce((s, m) => s + (brand.monthly[m]?.summary?.totalBalance || 0), 0);
+  const total3mSales = months.reduce((s, m) => s + (brand.monthly[parseInt(m.replace("月", ""))]?.summary?.totalSales || 0), 0);
+  const total3mProfit = months.reduce((s, m) => s + (brand.monthly[parseInt(m.replace("月", ""))]?.summary?.totalProfit || 0), 0);
+  const total3mDeposit = months.reduce((s, m) => s + (brand.monthly[parseInt(m.replace("月", ""))]?.summary?.totalDeposit || 0), 0);
+  const total3mBalance = months.reduce((s, m) => s + (brand.monthly[parseInt(m.replace("月", ""))]?.summary?.totalBalance || 0), 0);
   allSummary.innerHTML = `
     <div><div style="font-size:10px;color:var(--muted)">3个月总业绩</div><div style="font-size:14px;font-weight:700;color:var(--amber)">¥${(total3mSales/10000).toFixed(1)}万</div></div>
     <div><div style="font-size:10px;color:var(--muted)">总毛利</div><div style="font-size:14px;font-weight:700;color:var(--green)">¥${(total3mProfit/10000).toFixed(1)}万</div></div>
@@ -725,22 +725,75 @@ renderDashboard();
 
 // ===== Patch System =====
 function applyPatch() {
-  const patchVersion = localStorage.getItem("hp_patch_version") || "0";
-  let newVer = parseInt(patchVersion) + 1;
-  
-  // Apply patches based on version
-  if (newVer >= 2) {
-    // Patch 2: Added Stareep data
-    showToast("✅ 补丁已应用 v2 — 新增希瑞数据");
-  }
-  if (newVer >= 3) {
-    showToast("✅ 补丁已应用 v3");
-  }
-  
-  localStorage.setItem("hp_patch_version", String(newVer));
-  
-  // Re-render current page
+  const patchBtn = document.getElementById("patchBtn");
+  patchBtn.disabled = true;
+  patchBtn.textContent = "⏳ 加载中...";
+  showToast("🔄 正在检查补丁...");
+
+  fetch("https://teopoh71.github.io/hp-accounting/app.js")
+    .then(r => { if (!r.ok) throw new Error("HTTP " + r.status); return r.text(); })
+    .then(remoteJs => {
+      // Parse BRAND_DATA from remote by extracting the object literal
+      const startIdx = remoteJs.indexOf("const BRAND_DATA");
+      if (startIdx < 0) throw new Error("无法找到远程数据");
+      let braceCount = 0;
+      let dataStart = -1;
+      for (let i = startIdx; i < remoteJs.length; i++) {
+        if (remoteJs[i] === "{") {
+          if (braceCount === 0) dataStart = i;
+          braceCount++;
+        } else if (remoteJs[i] === "}") {
+          braceCount--;
+          if (braceCount === 0) {
+            const dataStr = remoteJs.substring(dataStart, i + 1);
+            const parsed = new Function("return " + dataStr)();
+
+            // Merge new data into current BRAND_DATA
+            let merged = 0;
+            for (const brand of Object.keys(parsed)) {
+              if (BRAND_DATA[brand]) {
+                for (const month of Object.keys(parsed[brand].monthly)) {
+                  BRAND_DATA[brand].monthly[month] = parsed[brand].monthly[month];
+                  merged++;
+                }
+              }
+            }
+
+            // Save patch version
+            const oldVer = parseInt(localStorage.getItem("hp_patch_version") || "0");
+            localStorage.setItem("hp_patch_version", String(oldVer + 1));
+            localStorage.setItem("hp_patch_time", new Date().toISOString());
+
+            renderDashboard();
+            showToast("✅ 补丁已更新 — " + merged + " 个月数据已同步");
+            patchBtn.textContent = "🔄 补丁";
+            patchBtn.disabled = false;
+            return;
+          }
+        }
+      }
+      throw new Error("数据解析失败");
+    })
+    .catch(err => {
+      showToast("❌ 补丁失败: " + err.message);
+      patchBtn.textContent = "🔄 补丁";
+      patchBtn.disabled = false;
+    });
+}
+
+// ===== Repair System =====
+function repairApp() {
+  showToast("🔧 正在修复应用...");
+  // Clear corrupted localStorage
+  localStorage.removeItem("hp_accounting_brand");
+  localStorage.removeItem("hp_stareep_month");
+  localStorage.removeItem("hp_patch_version");
+  localStorage.removeItem("hp_current_year");
+  state.currentBrand = "zolano";
+  state.currentYear = 2026;
+  state.stareepMonth = "5月";
   renderDashboard();
+  showToast("✅ 修复完成 — 请重新选择品牌");
 }
 
 // Register service worker
